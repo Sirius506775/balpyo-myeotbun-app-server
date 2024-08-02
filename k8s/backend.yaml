@@ -15,22 +15,20 @@ spec:
       containers:
         - name: backend
           # 여러분의 backend image 주소를 입력해주세요.
-          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_ea1e8573d814
-          command: ['sleep', '10000000']
+          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_91d05e5597da
           env:
             - name: HTTP_PROXY
               value: "http://krmp-proxy.9rum.cc"
             - name: HTTPS_PROXY
               value: "http://krmp-proxy.9rum.cc"         
           volumeMounts:
-            - name: app
-              mountPath: /app
-              subPath: app
+            - name: app-config
+              mountPath: /app/config
           resources:
             requests:
               memory: 1Gi
       volumes:
-        - name: app
+        - name: app-config
           configMap:
             name: app-hdg4k2dctg
 ---
