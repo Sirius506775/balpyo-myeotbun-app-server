@@ -18,7 +18,7 @@ LABEL authors="이동헌"
 WORKDIR /app
 
 # 컨테이너의 파일시스템에 빌드된 jar파일 복사
-COPY --from=builder /app/build/libs/balpyo-0.0.1-SNAPSHOT.jar /app/balpyo-0.0.1-SNAPSHOT.jar
+COPY --from=builder /app/build/libs .
 
 # docker image timezone 설정
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
