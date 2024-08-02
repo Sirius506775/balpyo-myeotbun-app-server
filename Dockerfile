@@ -1,7 +1,6 @@
 # Build
 FROM krmp-d2hub-idock.9rum.cc/goorm/gradle:8.8-jdk17
 
-
 WORKDIR /app
 
 COPY . .
@@ -10,18 +9,6 @@ RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPor
 
 RUN chmod +x ./gradlew
 RUN ./gradlew clean build
-
-# docker image timezone 설정
-RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-# 앱 실행을 위한 사용자 계정 생성
-RUN addgroup --system dockeruser && adduser --system --ingroup dockeruser dockeruser
-
-# /app 폴더 소유권을 신규 사용자 계정으로 변경
-RUN chown -R dockeruser:dockeruser /app
-
-# 사용자 계정으로 전환
-USER dockeruser
 
 # 노출할 포트 명시
 EXPOSE 8080
