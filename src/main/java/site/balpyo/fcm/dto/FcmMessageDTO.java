@@ -1,5 +1,7 @@
 package site.balpyo.fcm.dto;
 
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +18,7 @@ public class FcmMessageDTO {
     public static class Message {
         private FcmMessageDTO.Notification notification;
         private String token;
+        private Map<String, String> data;
     }
 
     @Builder

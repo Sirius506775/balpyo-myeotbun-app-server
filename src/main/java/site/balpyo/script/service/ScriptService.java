@@ -3,9 +3,6 @@ package site.balpyo.script.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import site.balpyo.ai.dto.AIGenerateRequest;
-import site.balpyo.ai.entity.AIGenerateLogEntity;
-import site.balpyo.ai.entity.GPTInfoEntity;
 import site.balpyo.ai.repository.AIGenerateLogRepository;
 import site.balpyo.ai.repository.GPTInfoRepository;
 import site.balpyo.common.dto.CommonResponse;
@@ -27,8 +24,6 @@ public class ScriptService {
 
     private final ScriptRepository scriptRepository;
     private final GuestRepository guestRepository;
-    private final AIGenerateLogRepository aiGenerateLogRepository;
-    private final GPTInfoRepository gptInfoRepository;
 
 
     public ResponseEntity<CommonResponse> saveEmptyScript(ScriptRequest scriptRequest, String uid) {

@@ -165,7 +165,6 @@ public class PollyService {
         ssmlBuilder.append("<speak>");
         ssmlBuilder.append(String.format("<prosody rate=\"%f%%\">", relativeSpeed * 100));
 
-
         for (int i = 0; i < inputText.length(); i++) {
             char ch = inputText.charAt(i);
 
@@ -190,17 +189,28 @@ public class PollyService {
                         // 이미 \n\n을 처리했으므로 추가로 하나 더 넘어감
                         i++;
                     } else {
-                        // 한 개의 개행 문자일 때 800ms 휴식 추가
-                        ssmlBuilder.append("<break time=\"800ms\"/>");
+                        // 한 개의 개행 문자일 때 200ms 휴식 추가
+                        ssmlBuilder.append("<break time=\"200ms\"/>");
                     }
                     break;
+                case '숨':
+                    if (inputText.startsWith("숨 고르기+1", i)) {
+                        ssmlBuilder.append("<break time=\"1000ms\"/>");
+                        i += 7; // "숨 고르기+1"의 길이만큼 인덱스 증가
+                    }
+                    break;
+                case 'P':
+                    if (inputText.startsWith("PPT 넘김+2", i)) {
+                        ssmlBuilder.append("<break time=\"2000ms\"/>");
+                        i += 8; // "PPT 넘김+2"의 길이만큼 인덱스 증가
+                    }
+                    break;    
                 default:
                     // 기본 문자 처리
                     ssmlBuilder.append(ch);
                     break;
             }
         }
-
 
         ssmlBuilder.append("</prosody>");
         ssmlBuilder.append("</speak>");
@@ -212,7 +222,6 @@ public class PollyService {
         SynthesizeSpeechResultDTO synthesizeSpeechResultDTO = synthesizeSpeech(pollyDTO);
         InputStream audioStream = synthesizeSpeechResultDTO.getAudioStream(); // 음성 파일 생성
         List<Map<String, Object>> speechMarksList = synthesizeSpeechResultDTO.getSpeechMarks();
-
 
         // 파일 이름 생성
         String fileName = UUID.randomUUID() + ".mp3";
@@ -227,7 +236,6 @@ public class PollyService {
         log.info("--------------------- " + baseUploadURL);
         log.info("--------------------- " + durationInSeconds);
 
-
         return UploadResultDTO.builder()
                 .profileUrl(baseUploadURL)
                 .playTime(durationInSeconds)
@@ -236,58 +244,74 @@ public class PollyService {
     }
 
     private Map<String, Object> uploadToS3(InputStream inputStream, String fileName) {
-
         log.info("--------------------- " + fileName);
-
+    
+        // InputStream의 크기를 계산하기 위해 ByteArrayOutputStream을 사용
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            log.error("Error reading input stream", e);
+        }
+    
+        byte[] data = byteArrayOutputStream.toByteArray();
+        InputStream byteArrayInputStream = new ByteArrayInputStream(data);
+    
+        // S3에 업로드할 ObjectMetadata 생성
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(data.length); // Content-Length 설정
+    
         // S3에 업로드
-        s3Client.getAmazonS3().putObject(bucketName, fileName, inputStream, new ObjectMetadata());
-
+        s3Client.getAmazonS3().putObject(bucketName, fileName, byteArrayInputStream, metadata);
+    
         // ACL 설정
         setAcl(s3Client.getAmazonS3(), fileName);
-
+    
         // 업로드된 파일의 URL 생성
         String baseUploadURL = "https://balpyo-bucket.s3.ap-northeast-2.amazonaws.com/" + fileName;
-
+    
         log.info("업로드 위치------" + baseUploadURL);
-
+    
         // 임시 파일로 저장하여 처리
         int durationInSeconds = 0; // 초기화
-
+    
         try {
-
             URL url = new URL(baseUploadURL);
             InputStream targetStream = url.openStream();
             fileName = Paths.get(url.getPath()).getFileName().toString();
             File localFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-
-//            File localFile = new File(baseUploadURL);
+    
             log.info("Download------" + localFile);
             Files.copy(targetStream, localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             targetStream.close(); // 스트림 닫기
-
+    
             // MP3 파일의 재생 시간 계산
             MP3File mp3File = new MP3File(localFile);
-
             log.info("mp3 file" + mp3File);
-
+    
             MP3AudioHeader audioHeader = (MP3AudioHeader) mp3File.getAudioHeader();
             durationInSeconds = audioHeader.getTrackLength();
-
+    
             log.info("------------ 재생시간: " + durationInSeconds + "초");
-
+    
             // 임시 파일 삭제
             localFile.delete();
-
+    
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+    
         // 결과를 Map에 담아 반환
         Map<String, Object> result = new HashMap<>();
         result.put("baseUploadURL", baseUploadURL);
         result.put("durationInSeconds", durationInSeconds);
         return result;
     }
+    
 
 
     public void setAcl(AmazonS3 s3, String objectPath) {

@@ -27,4 +27,6 @@ public class AIGenerateRequest {
     @NotBlank(message = "balpyoSecretKey는 비어 있을 수 없습니다.")
     private String balpyoAPIKey;
 
+    @NotBlank(message = "fcmtoken은 비어 있을 수 없습니다.")
+    private String fcmtoken;
 }

@@ -19,4 +19,6 @@ public class FcmSendDTO {
 
     private String body;
 
+    private String script_id;
+
 }

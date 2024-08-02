@@ -22,7 +22,8 @@ public enum ErrorEnum {
     BALPYO_UID_KEY_MISSING("9001", "헤더의 UID를 다시 확인해주세요."),
 
     // 5000 - 내부 서버 에러
-    INTERNAL_SERVER_ERROR("5000", "내부 서버 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR("5000", "내부 서버 오류가 발생했습니다."), 
+    FCM_SEND_ERROR("5001", "FCM 전송에 실패했습니다.");
 
 
     private final String code;

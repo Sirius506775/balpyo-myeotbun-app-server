@@ -14,6 +14,9 @@ RUN addgroup --system dockeruser && adduser --system --ingroup dockeruser docker
 # /app 폴더 소유권을 신규 사용자 계정으로 변경
 RUN chown -R dockeruser:dockeruser /app
 
+# docker image timezone 설정
+RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
 # 사용자 계정으로 전환
 USER dockeruser
 

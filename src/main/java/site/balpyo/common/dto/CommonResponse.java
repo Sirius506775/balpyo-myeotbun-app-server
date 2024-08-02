@@ -2,6 +2,8 @@ package site.balpyo.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import reactor.core.publisher.Mono;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

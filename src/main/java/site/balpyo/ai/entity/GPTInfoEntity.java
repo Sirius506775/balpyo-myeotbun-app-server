@@ -12,6 +12,7 @@ import javax.annotation.processing.Completion;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor

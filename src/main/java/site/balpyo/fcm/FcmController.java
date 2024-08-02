@@ -2,6 +2,7 @@ package site.balpyo.fcm;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class FcmController {
         
 
         log.debug("[+] 푸시 메시지를 전송합니다. ");
-        int result;
+        Mono<Integer> result;
         try {
             result = fcmService.sendMessageTo(fcmSendDTO);
             ApiResponseWrapper<Object> arw = ApiResponseWrapper
