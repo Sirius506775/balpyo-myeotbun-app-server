@@ -1,5 +1,5 @@
 # Build
-FROM krmp-d2hub-idock.9rum.cc/goorm/gradle:8.8-jdk17 AS builder
+FROM krmp-d2hub-idock.9rum.cc/goorm/gradle:8.8-jdk17
 
 WORKDIR /app
 
@@ -9,16 +9,6 @@ RUN echo "systemProp.http.proxyHost=krmp-proxy.9rum.cc\nsystemProp.http.proxyPor
 
 RUN chmod +x ./gradlew
 RUN ./gradlew bootJar
-
-# App image
-FROM krmp-d2hub-idock.9rum.cc/goorm/openjdk:17-jdk-alpine
-LABEL authors="이동헌"
-
-# 앱 디렉토리 생성
-WORKDIR /app
-
-# 컨테이너의 파일시스템에 빌드된 jar파일 복사
-COPY --from=builder /app/build/libs/balpyo-0.0.1-SNAPSHOT.jar /app/balpyo-0.0.1-SNAPSHOT.jar
 
 # docker image timezone 설정
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
@@ -36,4 +26,4 @@ USER dockeruser
 EXPOSE 8080
 
 # always do command
-ENTRYPOINT ["java","-jar","/app/balpyo-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/app/build/libs/balpyo-0.0.1-SNAPSHOT.jar"]
