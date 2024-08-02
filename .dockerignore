@@ -1,8 +1,7 @@
 .git
 .github
 scripts
- .dockerignore
- Dockerfile
+.dockerignore
 
 
 README.md
