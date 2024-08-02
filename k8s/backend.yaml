@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          # 여러분의 backend image 주소를 입력해주세요.
+          image: krmp-d2hub-idock.9rum.cc/dev-test/repo_ea1e8573d814
+          env:
+            - name: HTTP_PROXY
+              value: "http://krmp-proxy.9rum.cc"
+            - name: HTTPS_PROXY
+              value: "http://krmp-proxy.9rum.cc"         
+          volumeMounts:
+            - name: app
+              mountPath: /app
+              subPath: app
+          resources:
+            requests:
+              memory: 1Gi
+      volumes:
+        - name: app
+          configMap:
+            name: app-hdg4k2dctg
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    # selector 가 app name 에 맞도록 주위해주세요.
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
