@@ -23,6 +23,12 @@ COPY --from=builder /app/build/libs/balpyo-0.0.1-SNAPSHOT.jar /app/balpyo-0.0.1-
 # docker image timezone 설정
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
+# 앱 실행을 위한 사용자 계정 생성
+RUN addgroup --system dockeruser && adduser --system --ingroup dockeruser dockeruser
+
+# /app 폴더 소유권을 신규 사용자 계정으로 변경
+RUN chown -R dockeruser:dockeruser /app
+
 # 사용자 계정으로 전환
 USER dockeruser
 
